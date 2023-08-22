@@ -23,7 +23,13 @@ namespace SalesWebMvc.Models
             Status = status;
             Seller = seller;
         }
-
+        public SalesRecord(DateTime date, double amount, SalesStatus status, Seller seller)
+        {
+            Date = date;
+            Amount = amount;
+            Status = status;
+            Seller = seller;
+        }
 
     }
 }
