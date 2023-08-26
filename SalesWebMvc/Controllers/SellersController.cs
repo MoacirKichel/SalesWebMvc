@@ -3,6 +3,7 @@ using SalesWebMvc.Models;
 using SalesWebMvc.Models.ViewModels;
 using SalesWebMvc.Services;
 using SalesWebMvc.Services.Exceptions;
+using System.Diagnostics;
 using System.Security.Cryptography.X509Certificates;
 
 namespace SalesWebMvc.Controllers
@@ -45,13 +46,13 @@ namespace SalesWebMvc.Controllers
         {
             if (id == null) 
             {
-                return NotFound();
+                return RedirectToAction(nameof(Error), new { message = "Id not provided!!!" });
             }
 
             var obj = _sellerService.FindById(id.Value);
             if (obj ==null)
             {
-                return NotFound();
+                return RedirectToAction(nameof(Error), new { message = "Id not found!!!" });
             }
 
             return View(obj);
@@ -69,13 +70,13 @@ namespace SalesWebMvc.Controllers
         {
             if (id == null)
             {
-                return NotFound();
+                return RedirectToAction(nameof(Error), new { message = "Id not provided!!!" });
             }
 
             var obj = _sellerService.FindById(id.Value);
             if (obj == null)
             {
-                return NotFound();
+                return RedirectToAction(nameof(Error), new { message = "Id not found!!!" });
             }
 
             return View(obj);
@@ -85,13 +86,12 @@ namespace SalesWebMvc.Controllers
         {
             if (id == null)
             {
-                return NotFound();
+                return RedirectToAction(nameof(Error), new { message = "Id not provided!!!" });
             }
-
-            var obj = _sellerService.FindById(id.Value);
+                var obj = _sellerService.FindById(id.Value);
             if (obj == null)
             {
-                return NotFound();
+                return RedirectToAction(nameof(Error), new { message = "Id not found!!" });
             }
 
             List<Department> departments = _departmentService.FindAll();
@@ -108,20 +108,30 @@ namespace SalesWebMvc.Controllers
         {
             if (id != seller.Id)
             {
-                return BadRequest();
+                return RedirectToAction(nameof(Error), new { message = "Id mismatch!!!" });
             }
             try
             {
                 _sellerService.Update(seller);
                 return RedirectToAction(nameof(Index));
             } 
-            catch (NotFoundException) {
-                return NotFound();
+            catch (NotFoundException e) {
+                return RedirectToAction(nameof(Error), new { message = e.Message });
             }
-            catch (DbConcurrencyException)
+            catch (DbConcurrencyException e)
             {
-                return BadRequest();
+                return RedirectToAction(nameof(Error), new { message = e.Message });
             }
+        }
+
+        public IActionResult Error(string message)
+        {
+            var viewModel = new ErrorViewModel
+            {
+                Message = message,
+                RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier
+            };
+            return View(viewModel);
         }
     }
 }
