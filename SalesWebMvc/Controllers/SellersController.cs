@@ -109,7 +109,6 @@ namespace SalesWebMvc.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryTokenAttribute]
-            
         public async Task<IActionResult> Edit (int id, Seller seller)
         {
 

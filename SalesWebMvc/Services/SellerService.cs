@@ -34,7 +34,7 @@ namespace SalesWebMvc.Services
         {
             var obj = await _context.Seller.FindAsync(id);
             _context.Seller.Remove(obj);
-            _context.SaveChangesAsync();
+            await _context.SaveChangesAsync();
 
         }
 
