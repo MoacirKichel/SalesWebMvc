@@ -35,32 +35,43 @@ namespace SalesWebMvc.Services
                 .ToListAsync();
         }
 
-        /*       public async Task<List<IGrouping<Department, SalesRecord>>> FindByDateGroupingAsync(DateTime? minDate, DateTime? maxDate)
-               {
-                   var result = from obj in _context.SalesRecord select obj;
-                   if (minDate.HasValue)
-                   {
-                       result = result.Where(x => x.Date >= minDate.Value);
-                   }
-                   if (maxDate.HasValue)
-                   {
-                       result = result.Where(x => x.Date <= maxDate.Value);
-                   }
-                   return await result
-                       .Include(x => x.Seller)
-                       .Include(x => x.Seller.Department)
-                       .OrderByDescending(x => x.Date)
-                       .GroupBy(x => x.Seller.Department)
-                       .ToListAsync();
-               }
-           }*/
-
         public async Task<List<IGrouping<Department, SalesRecord>>> FindByDateGroupingAsync(DateTime? minDate, DateTime? maxDate)
         {
-            // transforms in object iqueryable
-            var result = await FindByDateAsync(minDate, maxDate);
+            var result = from obj in _context.SalesRecord select obj;
+            if (minDate.HasValue)
+            {
+                result = result.Where(x => x.Date >= minDate.Value);
+            }
+            if (maxDate.HasValue)
+            {
+                result = result.Where(x => x.Date <= maxDate.Value);
+            }
+            /* return await result
+                 .Include(x => x.Seller)
+                 .Include(x => x.Seller.Department)
+                 .OrderByDescending(x => x.Date)
+                 .GroupBy(x => x.Seller.Department)
+                 .ToListAsync();*/
 
-            return result.GroupBy(x => x.Seller.Department).ToList();
+
+            var search = await result
+            .Include(x => x.Seller)
+            .Include(x => x.Seller.Department)
+            .OrderByDescending(x => x.Date)
+            .ToListAsync();
+
+            return search
+                .GroupBy(x => x.Seller.Department)
+                .ToList();
         }
     }
+
+    /* funcionando public async Task<List<IGrouping<Department, SalesRecord>>> FindByDateGroupingAsync(DateTime? minDate, DateTime? maxDate)
+    {
+        // transforms in object iqueryable
+        var result = await FindByDateAsync(minDate, maxDate);
+
+        return result.GroupBy(x => x.Seller.Department).ToList();
+    }*/
 }
+
